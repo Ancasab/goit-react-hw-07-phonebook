@@ -1,35 +1,31 @@
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFilter, setFilter } from '../../redux/filterSlice';
-import {Input, Text } from './Filter.styled'
+import { setFilter } from '../../redux/filterSlice';
+import { Input, Text } from './Filter.styled'
+import { selectFilter } from '../../redux/selectors';
 
 export const Filter = () => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilter);
+  const filter = useSelector(selectFilter);
 
   const onChange = e => {
-    dispatch(setFilter(e.target.value));
+    dispatch(setFilter(e.target.value.trim()));
   };
   return (
-        <>    
-            <Text>
-                Find contacts by name
-            </Text>
-            <Input
-                type="text"
-                name={filter}
-                value={filter}
-                onChange={onChange}
-
-            />
-        </>
-    );
+    <>    
+      <Text htmlFor="filter-input">
+        Find contacts by name
+        <Input
+          id="filter-input"  
+          type="text"
+          value={filter}
+          onChange={onChange}
+          aria-label="Search contacts by name" 
+        />
+      </Text>
+    </>
+  );
 };
 
-Filter.propTypes = {
-  filter: PropTypes.string,
-  OnChange: PropTypes.func,
-};
 
 
 

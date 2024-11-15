@@ -9,6 +9,12 @@ export const Form = styled.form`
   padding: 20px;
   text-align: left;
 `;
+export const Text = styled.label`
+  font-size: 30px;
+  margin-bottom: 5px; 
+  margin-top: 5px; 
+
+`;
 
 export const Input = styled.input`
   padding: 5px;
@@ -36,9 +42,4 @@ export const Button = styled.button`
   }
 `;
 
-export const Text = styled.p`
-  font-size: 30px;
-  margin-bottom: 5px; 
-  margin-top: 5px; 
 
-`;

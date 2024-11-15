@@ -1,88 +1,73 @@
-
-import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { Form, Input, Button, Text } from './ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, getContacts } from '../../redux/contactsSlice';
-
+import { addContact } from '../../redux/operations';
+import { selectContacts, selectIsLoading } from '../../redux/selectors';
+import { toast } from 'react-toastify';
 
 export const ContactForm = () => {
-  const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
-
-  const [contactName, setcontactName] = useState('');
-  const [number, setNumber] = useState('');
-
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    if (contactName.trim() === '' || number.trim() === '') {
-      return;
+
+    const contact = {
+      id: nanoid(),
+      name: event.currentTarget.elements.name.value,
+      number: event.currentTarget.elements.number.value,
+    };
+
+    // Check if both fields are filled
+    if (!contact.name || !contact.number) {
+      return toast.error('Please fill in both name and number');
     }
 
-    const existingContact = contacts.find(
-      (contact) => contact.name.toLowerCase() === contactName.toLowerCase()
+    // Check for existing contact
+    const isExist = contacts.find(
+      ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
     );
-    if (existingContact) {
-      alert(`${contactName} is already in your contacts`);
-      return;
+
+    if (isExist) {
+      return toast.warn(`${contact.name} is already in the Phonebook`);
     }
 
-    dispatch(
-      addContact({
-        name: contactName,
-        number,
-        id: nanoid(),
-      })
-    )
-    setcontactName('');
-    setNumber('');
-  };
-
-  const handleChange = (event) => {
-    const { value, name } = event.target;
-
-    switch (name) {
-      case 'name':
-        setcontactName(value);
-        break;
-      
-      case 'number':
-        setNumber(value);
-        break;
-      
-      default:
-        return;
-    }
+    // Dispatch addContact action
+    dispatch(addContact(contact));
+    event.currentTarget.reset(); // Reset the form after submission
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Text>Name</Text>
+      <Text htmlFor="name-input">Name</Text>
       <Input
         type="text"
         name="name"
+        id="name-input"
         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я])?[a-zA-Zа-яА-Я]*)*$"
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
         required
-        value={contactName}
-        onChange={handleChange}
       />
-      <Text>Number</Text>
+      
+      <Text htmlFor="number-input">Number</Text>
       <Input
         type="tel"
         name="number"
+        id="number-input"
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
         required
-        value={number}
-        onChange={handleChange}
       />
-      <Button type="submit">Add Contact</Button>
+      
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? 'Adding...' : 'Add Contact'}
+      </Button>
     </Form>
   );
-}
+};
+
+
 
 
 

@@ -1,43 +1,61 @@
-import PropTypes from 'prop-types';
-import {  ContactItems, ContactData,  Button } from './ContactList.styled'
+import { ContactItems, ContactData, Button, Text, Spinner } from './ContactList.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact, getContacts } from '../../redux/contactsSlice';
-import { getFilter } from '../../redux/filterSlice';
-
+import { fetchContacts, deleteContact } from '../../redux/operations'; 
+import { useEffect } from 'react';
+import { selectError, selectFilteredContacts, selectIsLoading } from '../../redux/selectors';
+import { GrContactInfo } from 'react-icons/gr';
 
 export const ContactList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const filtered = useSelector(getFilter);
+  const filteredContacts = useSelector(selectFilteredContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
 
-  const normalizedFilter = filtered.toLowerCase();
-  const filteredContacts = contacts.filter(({ name }) =>
-    name.toLowerCase().includes(normalizedFilter)
-);
+  useEffect(() => {
+    // Obține contactele la montarea componentei
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
+  const onDeleteContact = (id) => {
+    // Trimite acțiunea de ștergere a contactului
+    dispatch(deleteContact(id));
+  };
 
-    return (
+  return (
+    <>
+      {isLoading && <Spinner />}
+      
+      {/* "Dacă nu sunt contacte, nu este în curs de încărcare și nu a apărut nicio eroare" */}
+      {!filteredContacts?.length && !error && !isLoading && (
+        <Text>No contacts found.</Text>
+      )}
+
+      {/* "Dacă a apărut o eroare" */}
+      {error && <Text>{error}</Text>}
+
       <ul>
-      {filteredContacts.map(({ id, name, number }) => (
-        <ContactItems key={id}>
-          <ContactData>
-            {name}: {number}
-          </ContactData>
-          <Button
-            type="button"
-            onClick={() => dispatch(deleteContact(id))}>
-            Delete
-          </Button>
-        </ContactItems>
-      ))}
-    </ul>
+        {filteredContacts.map(({ id, name, phone }) => (
+          <ContactItems key={id}>
+            <GrContactInfo size={20} />
+            <ContactData>
+              {name}: {phone}
+            </ContactData>
+            <Button
+              type="button"
+              onClick={() => onDeleteContact(id)} // Apel direct al funcției onDeleteContact
+              aria-label={`Delete contact ${name}`}
+            >
+              Delete
+            </Button>
+          </ContactItems>
+        ))}
+      </ul>
+    </>
   );
 };
+
     
 
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(PropTypes.string),
-  deleteContact: PropTypes.func,
-};
+
 
 

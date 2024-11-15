@@ -11,7 +11,7 @@ export const Input = styled.input`
 
 `;
 
-export const Text = styled.p`
+export const Text = styled.label`
     font-size: 30px;
     margin-top: 0;
     margin-bottom:5px;
