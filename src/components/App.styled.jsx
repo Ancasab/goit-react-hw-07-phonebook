@@ -8,7 +8,8 @@ export const Container = styled.div`
     align-items: center;  
     text-align: center;
     color: '#010101'; 
-    padding-left:20px;
+    // padding-left:20px;
+    min-width: 500px;
 
 `;
 

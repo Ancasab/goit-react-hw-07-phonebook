@@ -7,13 +7,18 @@ export const Input = styled.input`
     border-radius: 4px;
     font-size: 18px;
     // font-weight: 600;
-    width: 250px;
+    max-width: 250px;
 
 `;
 
 export const Text = styled.label`
-    font-size: 30px;
-    margin-top: 0;
-    margin-bottom:5px;
+    
+display: flex;
+flex-direction: column;
+justify-content:center;
+align-items: center;
+font-size: 30px;
+margin-top: 0;
+margin-bottom:5px;
 
 `;
